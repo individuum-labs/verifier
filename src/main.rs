@@ -4,6 +4,7 @@ use ::serde::{Deserialize, Serialize};
 use axum::{extract::Json, routing::post, Router};
 use ethers::{abi::Token, types::U256};
 use p256::pkcs8::DecodePublicKey;
+use regex::Regex;
 use secp256k1::hashes::{sha256, Hash};
 use secp256k1::{Message, Secp256k1, SecretKey};
 use tlsn_core::proof::{SessionProof, TlsProof};
@@ -122,8 +123,11 @@ async fn verify(Json(proofs): Json<Proofs>) -> Json<VerifyResult> {
         .windows(4)
         .position(|window| window == b"\r\n\r\n")
         .unwrap();
-    let account_data =
-        serde_json::from_slice::<Account>(&account_recv.data()[(position + 3)..]).unwrap();
+
+    let regex = Regex::new(r#"(?m)"screen_name":"(\w{1,15})""#).unwrap();
+
+    let string = String::from_utf8(account_recv.data()[(position + 3)..].to_vec()).unwrap();
+    let matched = regex.captures(&string).unwrap();
 
     assert_eq!(
         entry
@@ -138,7 +142,7 @@ async fn verify(Json(proofs): Json<Proofs>) -> Json<VerifyResult> {
             .result
             .legacy
             .screen_name,
-        account_data.screen_name
+        matched[1]
     );
 
     let data_to_sign = ethers::abi::encode(&[
