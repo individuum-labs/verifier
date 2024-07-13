@@ -2,7 +2,9 @@ use std::str::FromStr;
 
 use ::serde::{Deserialize, Serialize};
 use axum::{extract::Json, routing::post, Router};
+use ethers::utils::keccak256;
 use ethers::{abi::Token, types::U256};
+use k256::ecdsa::{self, RecoveryId, SigningKey};
 use p256::pkcs8::DecodePublicKey;
 use regex::Regex;
 use secp256k1::hashes::{sha256, Hash};
@@ -22,6 +24,7 @@ struct ResultData {
 struct VerifyResult {
     pub data: ResultData,
     pub signature: String,
+    pub recid: u8,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -151,18 +154,16 @@ async fn verify(Json(proofs): Json<Proofs>) -> Json<VerifyResult> {
         Token::String(data.full_text.clone()),
     ]);
 
-    let secp: Secp256k1<secp256k1::All> = Secp256k1::new();
-    let secret =
-        SecretKey::from_str("19d8b35c7b3e69e9fedd0fed968574e8acd80f1e733ad4420afa8dd32a9b24cd")
+    let key =
+        SigningKey::from_str("19d8b35c7b3e69e9fedd0fed968574e8acd80f1e733ad4420afa8dd32a9b24cd")
             .unwrap();
-    let signature = secp
-        .sign_ecdsa(
-            &Message::from_digest(sha256::Hash::hash(&data_to_sign).to_byte_array()),
-            &secret,
-        )
-        .to_string();
+    let (signature, recid) = key.sign_prehash_recoverable(&data_to_sign).unwrap();
 
-    Json(VerifyResult { data, signature })
+    Json(VerifyResult {
+        data,
+        signature: signature.to_string(),
+        recid: recid.to_byte(),
+    })
 }
 
 #[tokio::main]
