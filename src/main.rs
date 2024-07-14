@@ -2,15 +2,13 @@ use std::str::FromStr;
 
 use ::serde::{Deserialize, Serialize};
 use axum::{extract::Json, routing::post, Router};
-use ethers::utils::keccak256;
-use ethers::{abi::Token, types::U256};
-use k256::ecdsa::{self, RecoveryId, SigningKey};
+use ethers::{abi::Token, types::U256, utils::keccak256};
+use ethsign::{KeyFile, Protected, SecretKey};
+use hyper::Method;
 use p256::pkcs8::DecodePublicKey;
 use regex::Regex;
-use secp256k1::hashes::{sha256, Hash};
-use secp256k1::{Message, Secp256k1, SecretKey};
 use tlsn_core::proof::{SessionProof, TlsProof};
-use verifier::account::Account;
+use tower_http::cors::{Any, CorsLayer};
 use verifier::tweet::Root;
 
 #[derive(Serialize, Deserialize)]
@@ -23,8 +21,9 @@ struct ResultData {
 #[derive(Serialize, Deserialize)]
 struct VerifyResult {
     pub data: ResultData,
-    pub signature: String,
-    pub recid: u8,
+    pub signature_r: [u8; 32],
+    pub signature_s: [u8; 32],
+    pub signature_v: u8,
 }
 
 #[derive(Serialize, Deserialize)]
@@ -154,22 +153,32 @@ async fn verify(Json(proofs): Json<Proofs>) -> Json<VerifyResult> {
         Token::String(data.full_text.clone()),
     ]);
 
-    let key =
-        SigningKey::from_str("19d8b35c7b3e69e9fedd0fed968574e8acd80f1e733ad4420afa8dd32a9b24cd")
-            .unwrap();
-    let (signature, recid) = key.sign_prehash_recoverable(&data_to_sign).unwrap();
+    let file = std::fs::File::open("./keypair").unwrap();
+    let key: KeyFile = serde_json::from_reader(file).unwrap();
+    let password: Protected = "aaaaaaaa".into();
+    let secret = key.to_secret_key(&password).unwrap();
+    let signature = secret.sign(&keccak256(&data_to_sign)).unwrap();
 
     Json(VerifyResult {
         data,
-        signature: signature.to_string(),
-        recid: recid.to_byte(),
+        signature_r: signature.r,
+        signature_s: signature.s,
+        signature_v: signature.v,
     })
 }
 
 #[tokio::main]
 async fn main() {
     // build our application with a single route
-    let app = Router::new().route("/verify", post(verify));
+    let app = Router::new().route(
+        "/verify",
+        post(verify).layer(
+            CorsLayer::new()
+                .allow_origin(Any)
+                .allow_methods([Method::POST, Method::GET])
+                .allow_headers(Any),
+        ),
+    );
 
     // run our app with hyper, listening globally on port 3000
     let listener = tokio::net::TcpListener::bind("0.0.0.0:5000").await.unwrap();

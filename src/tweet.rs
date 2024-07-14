@@ -1,4 +1,5 @@
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 use serde_json::Value;
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -262,8 +263,6 @@ pub struct Legacy2 {
     #[serde(rename = "display_text_range")]
     pub display_text_range: Vec<i64>,
     pub entities: Entities2,
-    #[serde(rename = "extended_entities")]
-    pub extended_entities: ExtendedEntities,
     #[serde(rename = "favorite_count")]
     pub favorite_count: i64,
     pub favorited: bool,
@@ -272,10 +271,6 @@ pub struct Legacy2 {
     #[serde(rename = "is_quote_status")]
     pub is_quote_status: bool,
     pub lang: String,
-    #[serde(rename = "possibly_sensitive")]
-    pub possibly_sensitive: bool,
-    #[serde(rename = "possibly_sensitive_editable")]
-    pub possibly_sensitive_editable: bool,
     #[serde(rename = "quote_count")]
     pub quote_count: i64,
     #[serde(rename = "reply_count")]
@@ -293,150 +288,11 @@ pub struct Legacy2 {
 #[serde(rename_all = "camelCase")]
 pub struct Entities2 {
     pub hashtags: Vec<Value>,
-    pub media: Vec<Medum>,
     pub symbols: Vec<Value>,
     pub timestamps: Vec<Value>,
     pub urls: Vec<Value>,
     #[serde(rename = "user_mentions")]
     pub user_mentions: Vec<UserMention>,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Medum {
-    #[serde(rename = "display_url")]
-    pub display_url: String,
-    #[serde(rename = "expanded_url")]
-    pub expanded_url: String,
-    #[serde(rename = "id_str")]
-    pub id_str: String,
-    pub indices: Vec<i64>,
-    #[serde(rename = "media_key")]
-    pub media_key: String,
-    #[serde(rename = "media_url_https")]
-    pub media_url_https: String,
-    #[serde(rename = "type")]
-    pub type_field: String,
-    pub url: String,
-    #[serde(rename = "ext_media_availability")]
-    pub ext_media_availability: ExtMediaAvailability,
-    pub features: Features,
-    pub sizes: Sizes,
-    #[serde(rename = "original_info")]
-    pub original_info: OriginalInfo,
-    #[serde(rename = "media_results")]
-    pub media_results: MediaResults,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ExtMediaAvailability {
-    pub status: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Features {
-    pub large: Large,
-    pub medium: Medium,
-    pub small: Small,
-    pub orig: Orig,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Large {
-    pub faces: Vec<Value>,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Medium {
-    pub faces: Vec<Value>,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Small {
-    pub faces: Vec<Value>,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Orig {
-    pub faces: Vec<Value>,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Sizes {
-    pub large: Large2,
-    pub medium: Medium2,
-    pub small: Small2,
-    pub thumb: Thumb,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Large2 {
-    pub h: i64,
-    pub w: i64,
-    pub resize: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Medium2 {
-    pub h: i64,
-    pub w: i64,
-    pub resize: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Small2 {
-    pub h: i64,
-    pub w: i64,
-    pub resize: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Thumb {
-    pub h: i64,
-    pub w: i64,
-    pub resize: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct OriginalInfo {
-    pub height: i64,
-    pub width: i64,
-    #[serde(rename = "focus_rects")]
-    pub focus_rects: Vec<FocusRect>,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct FocusRect {
-    pub x: i64,
-    pub y: i64,
-    pub w: i64,
-    pub h: i64,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct MediaResults {
-    pub result: Result3,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Result3 {
-    #[serde(rename = "media_key")]
-    pub media_key: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -448,150 +304,6 @@ pub struct UserMention {
     #[serde(rename = "screen_name")]
     pub screen_name: String,
     pub indices: Vec<i64>,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ExtendedEntities {
-    pub media: Vec<Medum2>,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Medum2 {
-    #[serde(rename = "display_url")]
-    pub display_url: String,
-    #[serde(rename = "expanded_url")]
-    pub expanded_url: String,
-    #[serde(rename = "id_str")]
-    pub id_str: String,
-    pub indices: Vec<i64>,
-    #[serde(rename = "media_key")]
-    pub media_key: String,
-    #[serde(rename = "media_url_https")]
-    pub media_url_https: String,
-    #[serde(rename = "type")]
-    pub type_field: String,
-    pub url: String,
-    #[serde(rename = "ext_media_availability")]
-    pub ext_media_availability: ExtMediaAvailability2,
-    pub features: Features2,
-    pub sizes: Sizes2,
-    #[serde(rename = "original_info")]
-    pub original_info: OriginalInfo2,
-    #[serde(rename = "media_results")]
-    pub media_results: MediaResults2,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ExtMediaAvailability2 {
-    pub status: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Features2 {
-    pub large: Large3,
-    pub medium: Medium3,
-    pub small: Small3,
-    pub orig: Orig2,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Large3 {
-    pub faces: Vec<Value>,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Medium3 {
-    pub faces: Vec<Value>,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Small3 {
-    pub faces: Vec<Value>,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Orig2 {
-    pub faces: Vec<Value>,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Sizes2 {
-    pub large: Large4,
-    pub medium: Medium4,
-    pub small: Small4,
-    pub thumb: Thumb2,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Large4 {
-    pub h: i64,
-    pub w: i64,
-    pub resize: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Medium4 {
-    pub h: i64,
-    pub w: i64,
-    pub resize: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Small4 {
-    pub h: i64,
-    pub w: i64,
-    pub resize: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Thumb2 {
-    pub h: i64,
-    pub w: i64,
-    pub resize: String,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct OriginalInfo2 {
-    pub height: i64,
-    pub width: i64,
-    #[serde(rename = "focus_rects")]
-    pub focus_rects: Vec<FocusRect2>,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct FocusRect2 {
-    pub x: i64,
-    pub y: i64,
-    pub w: i64,
-    pub h: i64,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct MediaResults2 {
-    pub result: Result4,
-}
-
-#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Result4 {
-    #[serde(rename = "media_key")]
-    pub media_key: String,
 }
 
 #[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
